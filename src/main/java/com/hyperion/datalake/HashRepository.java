@@ -1,8 +1,7 @@
 package com.hyperion.datalake;
 
 
-import java.util.List;
-
+import com.hyperion.datalake.models.Hash;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 public interface HashRepository extends MongoRepository<Hash, String> {

@@ -1,5 +1,9 @@
 package com.hyperion.datalake;
 
+import com.hyperion.datalake.handlers.BankingFuncs;
+import com.hyperion.datalake.models.Blockchain;
+import com.hyperion.datalake.models.Traffic;
+import com.hyperion.datalake.repositories.BankingRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,7 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @CrossOrigin(origins = "http://localhost:8081")
 @RestController
-@RequestMapping("/lake")
+@RequestMapping("/api")
 public class BankingController {
     @Autowired
     BankingRepository bankingRepository;
@@ -25,6 +29,13 @@ public class BankingController {
     BankingFuncs bankingFuncs = new BankingFuncs();
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
+
+    @GetMapping("/health")
+    public ResponseEntity<Traffic> handleRoot() {
+        System.out.println("Root mapping triggered");
+
+        return new ResponseEntity<>(null, HttpStatus.OK);
+    }
 
     @PostMapping("/crypto")
     public ResponseEntity<Traffic> handlePost(@RequestBody Traffic traffic) {

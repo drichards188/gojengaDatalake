@@ -1,10 +1,13 @@
-package com.hyperion.datalake;
+package com.hyperion.datalake.handlers;
 
-import org.json.simple.parser.ParseException;
+import com.hyperion.datalake.*;
+import com.hyperion.datalake.repositories.BankingRepository;
+import com.hyperion.datalake.models.Blockchain;
+import com.hyperion.datalake.models.Hash;
+import com.hyperion.datalake.models.Traffic;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 
 import java.security.NoSuchAlgorithmException;
@@ -16,14 +19,14 @@ import java.util.List;
 public class BankingFuncs {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    enum Crud {
+    public enum Crud {
         CREATE,
         READ,
         UPDATE,
         DELETE
     }
 
-    enum Datatypes {
+    public enum Datatypes {
         LEDGER,
         USER,
         HASH,

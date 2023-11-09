@@ -13,15 +13,18 @@ repositories {
 }
 
 dependencies {
-    implementation group: 'commons-io', name: 'commons-io', version: '2.6'
     implementation 'commons-codec:commons-codec:1.15'
     implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
     implementation 'org.springframework.boot:spring-boot-starter-data-rest'
-    implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'com.googlecode.json-simple:json-simple:1.1.1'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    implementation 'mysql:mysql-connector-java:8.0.15'
+    implementation 'mysql:mysql-connector-java:8.0.33'
+    implementation group: 'com.amazonaws', name: 'aws-java-sdk-dynamodb', version: '1.12.583'
+    // https://mvnrepository.com/artifact/org.socialsignin/spring-data-dynamodb
+//    implementation 'org.socialsignin:spring-data-dynamodb:5.1.0'
+    implementation 'com.github.spring-data-dynamodb:spring-data-dynamodb:5.0.3'
 //    compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.14.1'
 //    compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.14.1'
 }

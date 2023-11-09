@@ -1,11 +1,12 @@
 package com.hyperion.datalake;
 
+import com.hyperion.datalake.handlers.BankingFuncs;
+import com.hyperion.datalake.handlers.SqlInter;
+import com.hyperion.datalake.models.Traffic;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.security.NoSuchAlgorithmException;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class BankingFuncsTest {
     SqlInter sqlInter;

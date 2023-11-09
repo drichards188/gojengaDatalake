@@ -1,7 +1,9 @@
-package com.hyperion.datalake;
+package com.hyperion.datalake.handlers;
 
 import java.sql.*;
 
+import com.hyperion.datalake.handlers.BankingFuncs;
+import com.hyperion.datalake.models.Traffic;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

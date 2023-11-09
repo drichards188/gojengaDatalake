@@ -22,7 +22,7 @@ public class DataLakeApplication {
     public CommandLineRunner commandLineRunner(ApplicationContext ctx) {
         return args -> {
 
-            System.out.println("Spring start process complete");
+            System.out.println("---> Spring start process complete");
 
         };
     }

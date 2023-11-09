@@ -1,7 +1,8 @@
-package com.hyperion.datalake;
+package com.hyperion.datalake.repositories;
 
 import java.util.List;
 
+import com.hyperion.datalake.models.Blockchain;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 public interface BankingRepository extends MongoRepository<Blockchain, String> {
