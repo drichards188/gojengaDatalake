@@ -1,9 +1,10 @@
-package com.hyperion.datalake;
+package com.hyperion.datalake.controllers;
 
 import com.hyperion.datalake.handlers.BankingFuncs;
 import com.hyperion.datalake.models.Blockchain;
 import com.hyperion.datalake.models.Traffic;
 import com.hyperion.datalake.repositories.BankingRepository;
+import com.hyperion.datalake.repositories.HashRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @CrossOrigin(origins = "http://localhost:8081")
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/bank")
 public class BankingController {
     @Autowired
     BankingRepository bankingRepository;

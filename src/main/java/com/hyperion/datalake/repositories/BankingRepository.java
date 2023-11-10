@@ -4,7 +4,9 @@ import java.util.List;
 
 import com.hyperion.datalake.models.Blockchain;
 import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.stereotype.Component;
 
+@Component("mongoBankingRepo")
 public interface BankingRepository extends MongoRepository<Blockchain, String> {
 //    List<Tutorial> findByTitleContaining(String account);
 //    List<Tutorial> findByPublished(boolean published);
