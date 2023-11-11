@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.sql.SQLException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -46,11 +45,44 @@ public class MainController {
         System.out.printf("hit root of with param: %s\n", name);
 //        ArrayList<String> queryResult = selectingTable("*", "usersTest");
         String formattedStatement = String.format("('%s', 8.22)", name);
-        boolean insertResult = insertData("ledgerTest (name, balance)", formattedStatement);
+        boolean insertResult = createData("ledgerTest (name, balance)", formattedStatement);
         if (!insertResult) {
             return new ResponseEntity<>(false, HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return new ResponseEntity<>(true, HttpStatus.OK);
+    }
+
+    @PostMapping("/sql")
+    public boolean postSql(@RequestBody Map<String, String> payload) throws SQLException {
+        String name = payload.get("name");
+        String balance = payload.get("balance");
+        System.out.printf("hit root of with param: %s\n", name);
+
+        if (name != null && balance != null) {
+            String formattedStatement = String.format("('%s', %s)", name, balance);
+            boolean insertResult = createData("ledgerTest (name, balance)", formattedStatement);
+            if (!insertResult) {
+                return false;
+            }
+        }
+
+        return name != null && balance != null;
+    }
+
+    @PutMapping("/sql")
+    public boolean putSql(@RequestParam(required = true) String name, @RequestBody Map<String, String> payload) throws SQLException {
+        String balance = payload.get("balance");
+
+        if (name != null && balance != null) {
+            String setStatement = String.format("balance = %s", balance);
+            String whereStatement = String.format("name = '%s'", name);
+            boolean updateResult = updateData("ledgerTest", setStatement, whereStatement);
+            if (!updateResult) {
+                return false;
+            }
+        }
+
+        return name != null && balance != null;
     }
 
     @GetMapping("" )

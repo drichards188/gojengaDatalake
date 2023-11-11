@@ -1,7 +1,5 @@
 package com.hyperion.datalake.handlers;
 
-import org.springframework.beans.factory.annotation.Value;
-
 import java.sql.*;
 import java.util.ArrayList;
 
@@ -31,7 +29,7 @@ public class UserHandler {
         }
     }
 
-    public static ArrayList<String> selectingTable(String selector, String table) throws SQLException {
+    public static ArrayList<String> readData(String selector, String table) throws SQLException {
         try (Connection conn = DriverManager.getConnection(CONNECTION_STRING, USERNAME, PASSWORD)) {
             // Configure the connection.
             setInitialSessionState(conn);
@@ -51,7 +49,7 @@ public class UserHandler {
         }
     }
 
-    public static boolean insertData(String table, String statement) {
+    public static boolean createData(String table, String statement) {
         try (Connection conn = DriverManager.getConnection(CONNECTION_STRING, USERNAME, PASSWORD)) {
             // Configure the connection.
             setInitialSessionState(conn);
@@ -61,6 +59,31 @@ public class UserHandler {
             try (Statement stmt = conn.createStatement()) {
                 int insertResponse = stmt.executeUpdate(insert_sql);
                 if (insertResponse > 0) {
+                    return true;
+                } else {
+                    return false;
+                }
+            } catch (SQLException e) {
+                System.out.println(e.getMessage());
+                return false;
+            }
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            return false;
+        }
+    }
+
+    public static boolean updateData(String table, String statement, String selector) {
+        try (Connection conn = DriverManager.getConnection(CONNECTION_STRING, USERNAME, PASSWORD)) {
+            // Configure the connection.
+            setInitialSessionState(conn);
+
+            String update_sql = String.format("UPDATE %s SET %s WHERE %s;", table, statement, selector);
+
+            try (Statement stmt = conn.createStatement()) {
+                int updateResponse = stmt.executeUpdate(update_sql);
+                if (updateResponse > 0) {
                     return true;
                 } else {
                     return false;
