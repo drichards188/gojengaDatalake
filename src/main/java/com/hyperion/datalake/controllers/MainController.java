@@ -6,15 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.sql.SQLException;
 import java.time.LocalDateTime;
@@ -24,7 +16,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-import static com.hyperion.datalake.handlers.UserHandler.getAllFromUsersTest;
+import static com.hyperion.datalake.handlers.UserHandler.*;
 
 @ComponentScan(basePackages = {"com.aws.rest"})
 @CrossOrigin(origins = "*")
@@ -41,10 +33,61 @@ public class MainController {
     }
 
     @GetMapping("/sql")
-    public ResponseEntity<String> rootSql(@RequestParam(required = false) String name) throws SQLException {
+    public ResponseEntity<Boolean> rootSql(@RequestParam(required = false) String name) throws SQLException {
         System.out.printf("hit root of with param: %s\n", name);
-        getAllFromUsersTest();
-        return new ResponseEntity<>("Success!", HttpStatus.OK);
+//        ArrayList<String> queryResult = selectingTable("*", "usersTest");
+        String formattedStatement = String.format("('%s', 8.22)", name);
+        boolean insertResult = createData("ledgerTest (name, balance)", formattedStatement);
+        if (!insertResult) {
+            return new ResponseEntity<>(false, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return new ResponseEntity<>(true, HttpStatus.OK);
+    }
+
+    @PostMapping("/sql")
+    public boolean postSql(@RequestBody Map<String, String> payload) throws SQLException {
+        String name = payload.get("name");
+        String balance = payload.get("balance");
+        System.out.printf("hit root of with param: %s\n", name);
+
+        if (name != null && balance != null) {
+            String formattedStatement = String.format("('%s', %s)", name, balance);
+            boolean insertResult = createData("ledgerTest (name, balance)", formattedStatement);
+            if (!insertResult) {
+                return false;
+            }
+        }
+
+        return name != null && balance != null;
+    }
+
+    @PutMapping("/sql")
+    public boolean putSql(@RequestParam(required = true) String name, @RequestBody Map<String, String> payload) throws SQLException {
+        String balance = payload.get("balance");
+
+        if (name != null && balance != null) {
+            String setStatement = String.format("balance = %s", balance);
+            String whereStatement = String.format("name = '%s'", name);
+            boolean updateResult = updateData("ledgerTest", setStatement, whereStatement);
+            if (!updateResult) {
+                return false;
+            }
+        }
+
+        return name != null && balance != null;
+    }
+
+    @DeleteMapping("/sql")
+    public boolean deleteSql(@RequestParam(required = true) String name) throws SQLException {
+        if (name != null) {
+            String whereStatement = String.format("name = '%s'", name);
+            boolean deleteResult = deleteData("ledgerTest", whereStatement);
+            if (!deleteResult) {
+                return false;
+            }
+        }
+
+        return name != null;
     }
 
     @GetMapping("" )

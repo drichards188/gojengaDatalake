@@ -1,8 +1,7 @@
 package com.hyperion.datalake.handlers;
 
-import org.springframework.beans.factory.annotation.Value;
-
 import java.sql.*;
+import java.util.ArrayList;
 
 /**
  * Scenario 1: Failover happens when autocommit is set to true - Catch SQLException with code 08S02.
@@ -27,6 +26,101 @@ public class UserHandler {
                     System.out.println(rs.getString("name"));
                 }
             }
+        }
+    }
+
+    public static ArrayList<String> readData(String selector, String table) throws SQLException {
+        try (Connection conn = DriverManager.getConnection(CONNECTION_STRING, USERNAME, PASSWORD)) {
+            // Configure the connection.
+            setInitialSessionState(conn);
+            ArrayList<String> result = new ArrayList<String>();
+
+            // Do something with method "betterExecuteQuery" using the Cluster-Aware Driver.
+            String select_sql = String.format("SELECT %s FROM %s", selector, table);
+            try (ResultSet rs = betterExecuteQuery(conn, select_sql)) {
+                while (rs.next()) {
+                    String field = rs.getString("name");
+                    System.out.println(field);
+                    result.add(field);
+                }
+            }
+
+            return result;
+        }
+    }
+
+    public static boolean createData(String table, String statement) {
+        try (Connection conn = DriverManager.getConnection(CONNECTION_STRING, USERNAME, PASSWORD)) {
+            // Configure the connection.
+            setInitialSessionState(conn);
+
+            String insert_sql = String.format("INSERT INTO %s VALUES %s", table, statement);
+
+            try (Statement stmt = conn.createStatement()) {
+                int insertResponse = stmt.executeUpdate(insert_sql);
+                if (insertResponse > 0) {
+                    return true;
+                } else {
+                    return false;
+                }
+            } catch (SQLException e) {
+                System.out.println(e.getMessage());
+                return false;
+            }
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            return false;
+        }
+    }
+
+    public static boolean updateData(String table, String statement, String selector) {
+        try (Connection conn = DriverManager.getConnection(CONNECTION_STRING, USERNAME, PASSWORD)) {
+            // Configure the connection.
+            setInitialSessionState(conn);
+
+            String update_sql = String.format("UPDATE %s SET %s WHERE %s;", table, statement, selector);
+
+            try (Statement stmt = conn.createStatement()) {
+                int updateResponse = stmt.executeUpdate(update_sql);
+                if (updateResponse > 0) {
+                    return true;
+                } else {
+                    return false;
+                }
+            } catch (SQLException e) {
+                System.out.println(e.getMessage());
+                return false;
+            }
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            return false;
+        }
+    }
+
+    public static boolean deleteData(String table, String selector) {
+        try (Connection conn = DriverManager.getConnection(CONNECTION_STRING, USERNAME, PASSWORD)) {
+            // Configure the connection.
+            setInitialSessionState(conn);
+
+            String delete_sql = String.format("DELETE FROM %s WHERE %s;", table, selector);
+
+            try (Statement stmt = conn.createStatement()) {
+                int deleteResponse = stmt.executeUpdate(delete_sql);
+                if (deleteResponse > 0) {
+                    return true;
+                } else {
+                    return false;
+                }
+            } catch (SQLException e) {
+                System.out.println(e.getMessage());
+                return false;
+            }
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            return false;
         }
     }
 
