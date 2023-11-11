@@ -99,6 +99,31 @@ public class UserHandler {
         }
     }
 
+    public static boolean deleteData(String table, String selector) {
+        try (Connection conn = DriverManager.getConnection(CONNECTION_STRING, USERNAME, PASSWORD)) {
+            // Configure the connection.
+            setInitialSessionState(conn);
+
+            String delete_sql = String.format("DELETE FROM %s WHERE %s;", table, selector);
+
+            try (Statement stmt = conn.createStatement()) {
+                int deleteResponse = stmt.executeUpdate(delete_sql);
+                if (deleteResponse > 0) {
+                    return true;
+                } else {
+                    return false;
+                }
+            } catch (SQLException e) {
+                System.out.println(e.getMessage());
+                return false;
+            }
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            return false;
+        }
+    }
+
     private static void setInitialSessionState(Connection conn) throws SQLException {
         // Your code here for the initial connection setup.
         try (Statement stmt1 = conn.createStatement()) {
