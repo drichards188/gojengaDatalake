@@ -25,6 +25,11 @@ dependencies {
     implementation 'software.amazon.awssdk:ssooidc'
     implementation 'software.amazon.awssdk:bom:2.20.26'
     implementation 'software.amazon.awssdk:dynamodb:2.21.17'
+    runtimeOnly 'software.aws.rds:aws-mysql-jdbc:1.1.6'
+    runtimeOnly 'software.amazon.awssdk:rds:2.20.57'
+    dependencies {
+        implementation group: 'software.aws.rds', name: 'aws-mysql-jdbc', version: '1.1.11'
+    }
     // https://mvnrepository.com/artifact/software.amazon.awssdk/dynamodb-enhanced
     implementation 'software.amazon.awssdk:dynamodb-enhanced:2.21.17'
     implementation group: 'com.amazonaws', name: 'aws-java-sdk-dynamodb', version: '1.12.583'

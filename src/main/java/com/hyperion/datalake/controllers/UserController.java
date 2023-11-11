@@ -4,6 +4,8 @@ import com.hyperion.datalake.models.UserItem;
 import com.hyperion.datalake.services.DynamoDBService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -34,48 +36,9 @@ public class UserController {
         this.dbService = dbService;
     }
 
-    @GetMapping("" )
-    public List<UserItem> getItems(@RequestParam(required=false) String archived) {
-        Iterable<UserItem> result;
-        if (archived != null && archived.compareTo("false")==0)
-            result = dbService.getOpenItems();
-        else if (archived != null && archived.compareTo("true")==0)
-            result = dbService.getClosedItems();
-        else
-            result = dbService.getAllItems();
-
-        return StreamSupport.stream(result.spliterator(), false)
-                .collect(Collectors.toUnmodifiableList());
-    }
-
-    // Notice the : character which is used for custom methods. More information can be found here:
-    // https://cloud.google.com/apis/design/custom_methods
-    @PutMapping("{id}:archive")
-    public String modUser(@PathVariable String id) {
-        dbService.archiveItemEC(id);
-        return id +" was archived";
-    }
-
-    @PostMapping("")
-    public List<UserItem> addItem(@RequestBody Map<String, String> payload) {
-        String name = payload.get("name");
-        String guide = payload.get("guide");
-        String description = payload.get("description");
-        String status = payload.get("status");
-
-        UserItem item = new UserItem();
-        String workId = UUID.randomUUID().toString();
-        String date = LocalDateTime.now().toString();
-        item.setId(workId);
-        item.setGuide(guide);
-        item.setDescription(description);
-        item.setName(name);
-        item.setDate(date);
-        item.setStatus(status);
-        item.setArchived(0);
-        dbService.setItem(item);
-        Iterable<UserItem> result= dbService.getOpenItems();
-        return StreamSupport.stream(result.spliterator(), false)
-                .collect(Collectors.toUnmodifiableList());
+    @GetMapping("")
+    public ResponseEntity<String> getItems(@RequestParam(required = false) String archived) {
+        System.out.println("hit root of user");
+        return new ResponseEntity<>("Hello World!", HttpStatus.OK);
     }
 }
