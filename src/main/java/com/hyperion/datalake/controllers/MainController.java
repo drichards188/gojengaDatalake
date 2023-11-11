@@ -18,13 +18,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.sql.SQLException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-import static com.hyperion.datalake.handlers.UserHandler.getAllFromUsersTest;
+import static com.hyperion.datalake.handlers.UserHandler.*;
 
 @ComponentScan(basePackages = {"com.aws.rest"})
 @CrossOrigin(origins = "*")
@@ -41,10 +42,15 @@ public class MainController {
     }
 
     @GetMapping("/sql")
-    public ResponseEntity<String> rootSql(@RequestParam(required = false) String name) throws SQLException {
+    public ResponseEntity<Boolean> rootSql(@RequestParam(required = false) String name) throws SQLException {
         System.out.printf("hit root of with param: %s\n", name);
-        getAllFromUsersTest();
-        return new ResponseEntity<>("Success!", HttpStatus.OK);
+//        ArrayList<String> queryResult = selectingTable("*", "usersTest");
+        String formattedStatement = String.format("('%s', 8.22)", name);
+        boolean insertResult = insertData("ledgerTest (name, balance)", formattedStatement);
+        if (!insertResult) {
+            return new ResponseEntity<>(false, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return new ResponseEntity<>(true, HttpStatus.OK);
     }
 
     @GetMapping("" )
