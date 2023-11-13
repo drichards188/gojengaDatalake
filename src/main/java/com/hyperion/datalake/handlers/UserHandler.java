@@ -124,7 +124,8 @@ public class UserHandler {
         return response;
     }
 
-    public static boolean deleteData(String table, String selector) {
+    public static HashMap<String, String> deleteData(String table, String selector) {
+        HashMap<String, String> response = new HashMap<>();
         try (Connection conn = DriverManager.getConnection(CONNECTION_STRING, USERNAME, PASSWORD)) {
             // Configure the connection.
             setInitialSessionState(conn);
@@ -134,18 +135,22 @@ public class UserHandler {
             try (Statement stmt = conn.createStatement()) {
                 int deleteResponse = stmt.executeUpdate(delete_sql);
                 if (deleteResponse > 0) {
-                    return true;
+                    response.put("success", "user deleted");
+                    return response;
                 } else {
-                    return false;
+                    response.put("error", "delete failed");
+                    return response;
                 }
             } catch (SQLException e) {
+                response.put("error", e.getMessage());
                 System.out.println(e.getMessage());
-                return false;
+                return response;
             }
 
         } catch (SQLException e) {
+            response.put("error", e.getMessage());
             System.out.println(e.getMessage());
-            return false;
+            return response;
         }
     }
 

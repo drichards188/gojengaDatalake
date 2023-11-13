@@ -102,17 +102,20 @@ public class MainController {
         return response;
     }
 
-    @DeleteMapping("/sql")
-    public boolean deleteSql(@RequestParam(required = true) String name) throws SQLException {
+    @DeleteMapping("")
+    public HashMap<String, String> deleteUser(@RequestParam(required = true) String name) throws SQLException {
+        HashMap<String, String> response = new HashMap<>();
         if (name != null) {
             String whereStatement = String.format("name = '%s'", name);
-            boolean deleteResult = deleteData("ledgerTest", whereStatement);
-            if (!deleteResult) {
-                return false;
+            HashMap<String, String> deleteResult = deleteData("ledgerTest", whereStatement);
+            if (deleteResult.containsKey("error")) {
+                response.put("error", deleteResult.get("error"));
+                return response;
             }
         }
 
-        return name != null;
+        response.put("success", "user deleted");
+        return response;
     }
 
 //    @GetMapping("" )
