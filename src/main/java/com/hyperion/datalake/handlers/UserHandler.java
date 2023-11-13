@@ -94,7 +94,8 @@ public class UserHandler {
         return response;
     }
 
-    public static boolean updateData(String table, String statement, String selector) {
+    public static HashMap<String, String> updateData(String table, String statement, String selector) {
+        HashMap<String, String> response = new HashMap<>();
         try (Connection conn = DriverManager.getConnection(CONNECTION_STRING, USERNAME, PASSWORD)) {
             // Configure the connection.
             setInitialSessionState(conn);
@@ -104,19 +105,23 @@ public class UserHandler {
             try (Statement stmt = conn.createStatement()) {
                 int updateResponse = stmt.executeUpdate(update_sql);
                 if (updateResponse > 0) {
-                    return true;
+                    response.put("success", "user updated");
                 } else {
-                    return false;
+                    response.put("error", "update failed");
+                    return response;
                 }
             } catch (SQLException e) {
                 System.out.println(e.getMessage());
-                return false;
+                response.put("error", e.getMessage());
+                return response;
             }
 
         } catch (SQLException e) {
             System.out.println(e.getMessage());
-            return false;
+            response.put("error", e.getMessage());
+            return response;
         }
+        return response;
     }
 
     public static boolean deleteData(String table, String selector) {

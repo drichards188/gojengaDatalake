@@ -77,20 +77,29 @@ public class MainController {
         return response;
     }
 
-    @PutMapping("/sql")
-    public boolean putSql(@RequestParam(required = true) String name, @RequestBody Map<String, String> payload) throws SQLException {
+    @PutMapping("")
+    public HashMap<String, String> putUser(String name, @RequestBody Map<String, String> payload) throws SQLException {
         String balance = payload.get("balance");
+        HashMap<String, String> response = new HashMap<>();
 
-        if (name != null && balance != null) {
-            String setStatement = String.format("balance = %s", balance);
-            String whereStatement = String.format("name = '%s'", name);
-            boolean updateResult = updateData("ledgerTest", setStatement, whereStatement);
-            if (!updateResult) {
-                return false;
+        try {
+            if (name != null && balance != null) {
+                String setStatement = String.format("balance = %s", balance);
+                String whereStatement = String.format("name = '%s'", name);
+                HashMap<String, String> updateResult = updateData("ledgerTest", setStatement, whereStatement);
+                if (updateResult.containsKey("error")) {
+                    response.put("error", updateResult.get("error"));
+                    return response;
+                }
             }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            response.put("error", e.getMessage());
+            return response;
         }
 
-        return name != null && balance != null;
+        response.put("success", "user updated");
+        return response;
     }
 
     @DeleteMapping("/sql")
