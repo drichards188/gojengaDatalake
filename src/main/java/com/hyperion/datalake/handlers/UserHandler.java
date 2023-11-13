@@ -1,7 +1,10 @@
 package com.hyperion.datalake.handlers;
 
+import com.hyperion.datalake.models.User;
+
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Scenario 1: Failover happens when autocommit is set to true - Catch SQLException with code 08S02.
@@ -29,27 +32,41 @@ public class UserHandler {
         }
     }
 
-    public static ArrayList<String> readData(String selector, String table) throws SQLException {
+    public static HashMap<String, HashMap<String,String>> readData(String columns, String table, String selector) throws SQLException {
         try (Connection conn = DriverManager.getConnection(CONNECTION_STRING, USERNAME, PASSWORD)) {
             // Configure the connection.
             setInitialSessionState(conn);
-            ArrayList<String> result = new ArrayList<String>();
+            HashMap<String, HashMap<String, String>> result = new HashMap<>();
 
             // Do something with method "betterExecuteQuery" using the Cluster-Aware Driver.
-            String select_sql = String.format("SELECT %s FROM %s", selector, table);
+            String select_sql = String.format("SELECT %s FROM %s WHERE %s;", columns, table, selector);
             try (ResultSet rs = betterExecuteQuery(conn, select_sql)) {
                 while (rs.next()) {
-                    String field = rs.getString("name");
-                    System.out.println(field);
-                    result.add(field);
+                    ResultSetMetaData rsMetaData = rs.getMetaData();
+                    int count = rsMetaData.getColumnCount();
+                    String name = rs.getString("name");
+
+                    HashMap<String, String> userMap = new HashMap<>();
+
+                    for (int i = 1; i <= count; i++) {
+                        String column = rsMetaData.getColumnName(i);
+                        String value = rs.getString(column);
+                        userMap.put(column, value);
+                        System.out.println(column + ": " + value);
+                    }
+                    result.put(name, userMap);
                 }
             }
 
             return result;
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            return new HashMap<>();
         }
     }
 
-    public static boolean createData(String table, String statement) {
+    public static HashMap<String, String> createData(String table, String statement) {
+        HashMap<String, String> response = new HashMap<>();
         try (Connection conn = DriverManager.getConnection(CONNECTION_STRING, USERNAME, PASSWORD)) {
             // Configure the connection.
             setInitialSessionState(conn);
@@ -59,22 +76,26 @@ public class UserHandler {
             try (Statement stmt = conn.createStatement()) {
                 int insertResponse = stmt.executeUpdate(insert_sql);
                 if (insertResponse > 0) {
-                    return true;
+                    response.put("success", "user created");
                 } else {
-                    return false;
+                    response.put("error", "user already exists");
                 }
             } catch (SQLException e) {
                 System.out.println(e.getMessage());
-                return false;
+                response.put("error", e.getMessage());
+                return response;
             }
 
         } catch (SQLException e) {
             System.out.println(e.getMessage());
-            return false;
+            response.put("error", e.getMessage());
+            return response;
         }
+        return response;
     }
 
-    public static boolean updateData(String table, String statement, String selector) {
+    public static HashMap<String, String> updateData(String table, String statement, String selector) {
+        HashMap<String, String> response = new HashMap<>();
         try (Connection conn = DriverManager.getConnection(CONNECTION_STRING, USERNAME, PASSWORD)) {
             // Configure the connection.
             setInitialSessionState(conn);
@@ -84,22 +105,27 @@ public class UserHandler {
             try (Statement stmt = conn.createStatement()) {
                 int updateResponse = stmt.executeUpdate(update_sql);
                 if (updateResponse > 0) {
-                    return true;
+                    response.put("success", "user updated");
                 } else {
-                    return false;
+                    response.put("error", "update failed");
+                    return response;
                 }
             } catch (SQLException e) {
                 System.out.println(e.getMessage());
-                return false;
+                response.put("error", e.getMessage());
+                return response;
             }
 
         } catch (SQLException e) {
             System.out.println(e.getMessage());
-            return false;
+            response.put("error", e.getMessage());
+            return response;
         }
+        return response;
     }
 
-    public static boolean deleteData(String table, String selector) {
+    public static HashMap<String, String> deleteData(String table, String selector) {
+        HashMap<String, String> response = new HashMap<>();
         try (Connection conn = DriverManager.getConnection(CONNECTION_STRING, USERNAME, PASSWORD)) {
             // Configure the connection.
             setInitialSessionState(conn);
@@ -109,18 +135,22 @@ public class UserHandler {
             try (Statement stmt = conn.createStatement()) {
                 int deleteResponse = stmt.executeUpdate(delete_sql);
                 if (deleteResponse > 0) {
-                    return true;
+                    response.put("success", "user deleted");
+                    return response;
                 } else {
-                    return false;
+                    response.put("error", "delete failed");
+                    return response;
                 }
             } catch (SQLException e) {
+                response.put("error", e.getMessage());
                 System.out.println(e.getMessage());
-                return false;
+                return response;
             }
 
         } catch (SQLException e) {
+            response.put("error", e.getMessage());
             System.out.println(e.getMessage());
-            return false;
+            return response;
         }
     }
 
