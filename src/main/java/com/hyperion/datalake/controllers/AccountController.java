@@ -25,11 +25,11 @@ public class AccountController {
 
         if (queryResult.isEmpty()) {
             HashMap<String, String> error = new HashMap<>();
-            error.put("error", "user not found");
+            error.put("error", "account not found");
             return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
         }
-        HashMap<String, String> user = queryResult.get(name);
-        return new ResponseEntity<>(user, HttpStatus.OK);
+        HashMap<String, String> account = queryResult.get(name);
+        return new ResponseEntity<>(account, HttpStatus.OK);
     }
     @PostMapping("")
     public HashMap<String, String> createAccount(@RequestBody Map<String, String> payload) throws SQLException {
@@ -46,7 +46,7 @@ public class AccountController {
                     response.put("error", insertResult.get("error"));
                     return response;
                 } else {
-                    response.put("success", "user created");
+                    response.put("success", "account created");
                     return response;
                 }
 
@@ -57,7 +57,7 @@ public class AccountController {
             System.out.println(e.getMessage());
             return response;
         }
-        response.put("error", "user not found");
+        response.put("error", "account not found");
         return response;
     }
     @PutMapping("")
@@ -81,7 +81,7 @@ public class AccountController {
             return response;
         }
 
-        response.put("success", "user updated");
+        response.put("success", "account updated");
         return response;
     }
 
@@ -97,7 +97,7 @@ public class AccountController {
             }
         }
 
-        response.put("success", "user deleted");
+        response.put("success", "account deleted");
         return response;
     }
 }

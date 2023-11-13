@@ -44,14 +44,16 @@ public class UserController {
     @PostMapping("")
     public HashMap<String, String> createUser(@RequestBody Map<String, String> payload) throws SQLException {
         String name = payload.get("name");
-        String balance = payload.get("balance");
+        String password = payload.get("password");
         System.out.printf("hit root of with param: %s\n", name);
         HashMap<String, String> response = new HashMap<>();
 
+//        todo hash password
+
         try {
-            if (name != null && balance != null) {
-                String formattedStatement = String.format("('%s', %s)", name, balance);
-                HashMap<String, String> insertResult = createData("ledgerTest (name, balance)", formattedStatement);
+            if (name != null && password != null) {
+                String formattedStatement = String.format("('%s', %s)", name, password);
+                HashMap<String, String> insertResult = createData("usersTest (name, balance)", formattedStatement);
                 if (insertResult.containsKey("error")) {
                     response.put("error", insertResult.get("error"));
                     return response;
@@ -73,12 +75,14 @@ public class UserController {
 
     @PutMapping("")
     public HashMap<String, String> putUser(String name, @RequestBody Map<String, String> payload) throws SQLException {
-        String balance = payload.get("balance");
+        String password = payload.get("password");
         HashMap<String, String> response = new HashMap<>();
 
+//        todo hash password
+
         try {
-            if (name != null && balance != null) {
-                String setStatement = String.format("balance = %s", balance);
+            if (name != null && password != null) {
+                String setStatement = String.format("balance = %s", password);
                 String whereStatement = String.format("name = '%s'", name);
                 HashMap<String, String> updateResult = updateData("ledgerTest", setStatement, whereStatement);
                 if (updateResult.containsKey("error")) {
