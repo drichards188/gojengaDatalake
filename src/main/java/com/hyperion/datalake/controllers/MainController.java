@@ -107,7 +107,7 @@ public class MainController {
         HashMap<String, String> response = new HashMap<>();
         if (name != null) {
             String whereStatement = String.format("name = '%s'", name);
-            HashMap<String, String> deleteResult = deleteData("ledgerTest", whereStatement);
+            HashMap<String, String> deleteResult = deleteData("usersTest", whereStatement);
             if (deleteResult.containsKey("error")) {
                 response.put("error", deleteResult.get("error"));
                 return response;
