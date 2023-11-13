@@ -39,7 +39,6 @@ public class UserHandler {
             HashMap<String, HashMap<String, String>> result = new HashMap<>();
 
             // Do something with method "betterExecuteQuery" using the Cluster-Aware Driver.
-//            if nothing found, returned result will be empty
             String select_sql = String.format("SELECT %s FROM %s WHERE %s;", columns, table, selector);
             try (ResultSet rs = betterExecuteQuery(conn, select_sql)) {
                 while (rs.next()) {
@@ -66,7 +65,8 @@ public class UserHandler {
         }
     }
 
-    public static boolean createData(String table, String statement) {
+    public static HashMap<String, String> createData(String table, String statement) {
+        HashMap<String, String> response = new HashMap<>();
         try (Connection conn = DriverManager.getConnection(CONNECTION_STRING, USERNAME, PASSWORD)) {
             // Configure the connection.
             setInitialSessionState(conn);
@@ -76,19 +76,22 @@ public class UserHandler {
             try (Statement stmt = conn.createStatement()) {
                 int insertResponse = stmt.executeUpdate(insert_sql);
                 if (insertResponse > 0) {
-                    return true;
+                    response.put("success", "user created");
                 } else {
-                    return false;
+                    response.put("error", "user already exists");
                 }
             } catch (SQLException e) {
                 System.out.println(e.getMessage());
-                return false;
+                response.put("error", e.getMessage());
+                return response;
             }
 
         } catch (SQLException e) {
             System.out.println(e.getMessage());
-            return false;
+            response.put("error", e.getMessage());
+            return response;
         }
+        return response;
     }
 
     public static boolean updateData(String table, String statement, String selector) {

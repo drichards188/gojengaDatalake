@@ -48,20 +48,33 @@ public class MainController {
     }
 
     @PostMapping("")
-    public boolean createUser(@RequestBody Map<String, String> payload) throws SQLException {
+    public HashMap<String, String> createUser(@RequestBody Map<String, String> payload) throws SQLException {
         String name = payload.get("name");
         String balance = payload.get("balance");
         System.out.printf("hit root of with param: %s\n", name);
+        HashMap<String, String> response = new HashMap<>();
 
-        if (name != null && balance != null) {
-            String formattedStatement = String.format("('%s', %s)", name, balance);
-            boolean insertResult = createData("ledgerTest (name, balance)", formattedStatement);
-            if (!insertResult) {
-                return false;
+        try {
+            if (name != null && balance != null) {
+                String formattedStatement = String.format("('%s', %s)", name, balance);
+                HashMap<String, String> insertResult = createData("ledgerTest (name, balance)", formattedStatement);
+                if (insertResult.containsKey("error")) {
+                    response.put("error", insertResult.get("error"));
+                    return response;
+                } else {
+                    response.put("success", "user created");
+                    return response;
+                }
+
             }
         }
-
-        return name != null && balance != null;
+        catch (Exception e) {
+            response.put("error", e.getMessage());
+            System.out.println(e.getMessage());
+            return response;
+        }
+        response.put("error", "user not found");
+        return response;
     }
 
     @PutMapping("/sql")
