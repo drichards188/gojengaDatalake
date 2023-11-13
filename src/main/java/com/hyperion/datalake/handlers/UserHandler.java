@@ -1,7 +1,10 @@
 package com.hyperion.datalake.handlers;
 
+import com.hyperion.datalake.models.User;
+
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Scenario 1: Failover happens when autocommit is set to true - Catch SQLException with code 08S02.
@@ -29,27 +32,37 @@ public class UserHandler {
         }
     }
 
-    public static ArrayList<String> readData(String columns, String table, String selector ) throws SQLException {
+    public static HashMap<String, HashMap<String,String>> readData(String columns, String table, String selector) throws SQLException {
         try (Connection conn = DriverManager.getConnection(CONNECTION_STRING, USERNAME, PASSWORD)) {
             // Configure the connection.
             setInitialSessionState(conn);
-            ArrayList<String> result = new ArrayList<String>();
+            HashMap<String, HashMap<String, String>> result = new HashMap<>();
 
             // Do something with method "betterExecuteQuery" using the Cluster-Aware Driver.
 //            if nothing found, returned result will be empty
             String select_sql = String.format("SELECT %s FROM %s WHERE %s;", columns, table, selector);
             try (ResultSet rs = betterExecuteQuery(conn, select_sql)) {
                 while (rs.next()) {
-                    String field = rs.getString("name");
-                    System.out.println(field);
-                    result.add(field);
+                    ResultSetMetaData rsMetaData = rs.getMetaData();
+                    int count = rsMetaData.getColumnCount();
+                    String name = rs.getString("name");
+
+                    HashMap<String, String> userMap = new HashMap<>();
+
+                    for (int i = 1; i <= count; i++) {
+                        String column = rsMetaData.getColumnName(i);
+                        String value = rs.getString(column);
+                        userMap.put(column, value);
+                        System.out.println(column + ": " + value);
+                    }
+                    result.put(name, userMap);
                 }
             }
 
             return result;
         } catch (SQLException e) {
             System.out.println(e.getMessage());
-            return new ArrayList<String>();
+            return new HashMap<>();
         }
     }
 

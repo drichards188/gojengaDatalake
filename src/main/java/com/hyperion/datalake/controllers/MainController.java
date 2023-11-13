@@ -1,6 +1,7 @@
 package com.hyperion.datalake.controllers;
 
 import com.google.gson.Gson;
+import com.hyperion.datalake.models.User;
 import com.hyperion.datalake.models.WorkItem;
 import com.hyperion.datalake.services.DynamoDBService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,10 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.sql.SQLException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -35,16 +33,18 @@ public class MainController {
     }
 
     @GetMapping("")
-    public ResponseEntity<String> getUser(@RequestParam(required = true) String name) throws SQLException {
+    public ResponseEntity<HashMap<String, String>> getUser(String name) throws SQLException {
         System.out.printf("hit root of with param: %s\n", name);
         String formattedSelector = String.format("name = '%s'", name);
-        ArrayList<String> queryResult = readData("*", "usersTest", formattedSelector);
+        HashMap<String, HashMap<String, String>> queryResult = readData("*", "usersTest", formattedSelector);
 
         if (queryResult.isEmpty()) {
-            return new ResponseEntity<>("user not found", HttpStatus.NOT_FOUND);
+            HashMap<String, String> error = new HashMap<>();
+            error.put("error", "user not found");
+            return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
         }
-        String jsonResponse = new Gson().toJson(queryResult);
-        return new ResponseEntity<>(jsonResponse, HttpStatus.OK);
+        HashMap<String, String> user = queryResult.get(name);
+        return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
     @PostMapping("")
